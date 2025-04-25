@@ -3,3 +3,6 @@ dashboard/algoDashboard/logs/2025-02-08/app.log
 /dashboard/algoDashboard/__pycache__
 dashboard/algoDashboard/data/memoryData/token_filtered.csv
 dashboard/algoDashboard/data/memoryData/token_filtered.csv
+/winvenv
+/logs
+login.ipynb
