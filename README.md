@@ -1,112 +1,158 @@
-# Algorithm-Development-Template
+# Options IV Dashboard 🚀
 
-## Trading Algorithms Template Repository
+A user-friendly dashboard to visualize and analyze Options Implied Volatility (IV) data from Angel Broking's Smart API.
 
-This repository serves as a template for developing, testing, and deploying trading algorithms. It provides a structured framework that includes components for backtesting, live trading, and a dashboard interface. The core utilities, configurations, and strategies are organized to ensure modularity and ease of maintenance.
-
-## Directory Structure
-
+```ascii
++--------------------+        +-----------------+        +-------------------+
+|                    |        |                 |        |                  |
+|  Angel Broking API |<------>| Flask Backend  |<------>|  Web Dashboard   |
+|                    |        |                 |        |                  |
++--------------------+        +-----------------+        +-------------------+
+         ^                           |                          |
+         |                           v                          v
+         |                    +-----------------+        +-------------------+
+         |                    |   Data Store    |        |  Interactive UI  |
+         |                    |    (JSON)       |        |   & Charting    |
+         |                    +-----------------+        +-------------------+
+         |
+         v
++--------------------+
+|   Options Data     |
+|   & Greeks Info    |
++--------------------+
 ```
 
-├── README.md
-├── backtesting
-│   ├── backTesting-Algo.ipynb
-│   ├── data
-│   └── dataFormaters
-├── dashboard
-│   └── algoDashboard
-│       ├── app.py
-│       ├── static
-│       │   └── styles.css
-│       └── templates
-│           └── index.html
-├── docs
-│   └── setup_guide.md
-├── liveEngine
-│   ├── config
-│   │   └── config.ini
-│   ├── data
-│   │   ├── memoryData
-│   │   └── savedData
-│   ├── logs
-│   │   └── logs.log
-│   └── src
-│       ├── core
-│       ├── main.py
-│       ├── strategy
-│       └── utils
-└── requirements.txt
+## 🌟 Features
+
+- Real-time options data fetching
+- IV (Implied Volatility) visualization
+- User-friendly web interface
+- Stock and expiry date selection
+- Automated data updates
+- Token mapping and filtering
+
+## 🛠️ How It Works
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Dashboard
+    participant Flask
+    participant AngelAPI
+    
+    User->>Dashboard: Select Stock & Expiry
+    Dashboard->>Flask: Request Data
+    Flask->>AngelAPI: Fetch Option Greeks
+    AngelAPI-->>Flask: Return Data
+    Flask->>Dashboard: Update Display
+    Dashboard->>User: Show IV Analysis
 ```
 
-### Folder Descriptions
+## 🔑 API Authentication Flow
 
-- **backtesting**: Contains notebooks, scripts, and data for simulating trading strategies using historical data. This helps in evaluating the performance of algorithms before deploying them live.
-  - `backtesting-algo.ipynb`: Jupyter notebook for running backtests and analyzing results.
-  - `data`: Stores historical market data used for backtesting.
-  - `data-formatters`: Scripts or tools to format and preprocess raw data for backtesting.
+1. Initialize SmartConnect:
+```python
+obj = SmartConnect(api_key=api_key)
+```
 
-- **dashboard**: Houses the web-based dashboard for visualizing algorithm performance and monitoring live trading activities.
-  - `algo-dashboard`: Main directory for dashboard code.
-    - `static`: Contains static files like CSS, JavaScript, and images.
-    - `templates`: HTML templates for the dashboard's user interface.
+2. Generate TOTP for 2FA:
+```python
+token = pyotp.TOTP(totp_secret).now()
+```
 
-- **docs**: Documentation for setting up, configuring, and using the algorithms.
-  - `setup_guide.md`: Guide to help users set up the environment and get started with the algorithms.
+3. Create Session:
+```python
+data = obj.generateSession(client_code, password, token)
+```
 
-- **live-engine**: Core engine for live trading, including configuration, data management, and execution logic.
-  - `logs`: Directory for storing log files generated during live trading.
-    - `logs.log`: Example log file for tracking trades, errors, and other events.
-  - `config`: Configuration files required for setting up and running the algorithms.
-    - `config.ini`: Sample configuration file with parameters for live trading, such as API keys, trading pairs, risk management settings, etc.
+## 📁 Project Structure
 
-  - `data`: Folder for storing runtime data, including in-memory data and saved data for later analysis.
-    - `memory-data`: Temporary data stored during live trading.
-      - saved-data`: Persistent data storage for logs, historical trade data, and analysis results.
-  - `src`: Source code directory containing all modules required for live trading.
-    - `core`: Core functionalities shared across different strategies, such as order execution and data fetching.
-    - `strategy`: Implementations of specific trading strategies.
-    - `utils`: Utility functions and helper scripts.
-    - `main.py`: Starting point of the script
+```
+OptionsIV-Dashboard/
+├── algoDashboard/
+│   ├── app.py           # Main Flask application
+│   ├── keys.py          # API credentials
+│   ├── data/            # Data storage
+│   │   ├── IVjsons/    # Options data
+│   │   └── memoryData/  # Token mapping
+│   ├── static/          # CSS files
+│   └── templates/       # HTML templates
+├── docs/
+│   └── setup_guide.md   # Setup instructions
+└── requirements.txt     # Dependencies
+```
 
+## 🚀 Getting Started
 
-- **requirements.txt**: Lists all Python dependencies required to run the algorithms. Install using `pip install -r requirements.txt`.
-
-## Getting Started
-
-To get started with this repository, follow these steps:
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-username/trading-algorithms-template.git
-   cd trading-algorithms-template
-   ```
-
-2. **Install Dependencies**:
-   Make sure you have Python installed. Then, install the required packages using pip:
+1. Clone the repository
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-
-3. **Configure Your Environment**:
-   Edit the `config/config.ini` file to set up your API keys, trading pairs, and other parameters according to your trading strategy and environment.
-
-4. **Run Backtests**:
-   Use the Jupyter notebook in the `backtesting` folder to test your trading strategies with historical data. Open the notebook with:
-   ```bash
-   jupyter notebook backtesting/backtesting-algo.ipynb
+3. Configure API credentials in `algoDashboard/keys.py`:
+   ```python
+   api_key = "YOUR_API_KEY"
+   client_code = "YOUR_CLIENT_CODE"
+   password = "YOUR_PASSWORD"
+   totp_secret = "YOUR_TOTP_SECRET"
    ```
-
-5. **Deploy Live Trading**:
-   Ensure your environment is properly configured and run the live trading engine. Navigate to the `live-engine/src` folder and execute your main trading script:
+4. Run the application:
    ```bash
-   python live-engine/src/main.py
+   cd algoDashboard
+   python app.py
    ```
+5. Open browser and visit: `http://localhost:5006`
 
-6. **Monitor Performance**:
-   Launch the dashboard to monitor your trading algorithm in real-time. Navigate to the `dashboard` directory and start the web server:
-   ```bash
-   python -m http.server
-   ```
+## 🔄 Data Flow Explained
 
-## cd dashboard/algoDashboard
-how to run dashboard:  python app.py
+1. **Token Map Initialization**
+   - Fetches master data from Angel Broking
+   - Filters stocks based on predefined list
+   - Saves mapping to CSV for quick access
+
+2. **User Selection**
+   - Choose stock from dropdown
+   - Select expiry date
+   - Interface updates dynamically
+
+3. **Data Fetching**
+   - Application checks local JSON storage
+   - If data exists, loads from cache
+   - If not, fetches from API
+   - Updates every minute
+
+4. **Display & Analysis**
+   - Shows IV data in readable format
+   - Updates charts in real-time
+   - Provides quick analysis tools
+
+## 📝 API Functions
+
+Key functions explained like you're 5:
+- `intializeSymbolTokenMap()`: Makes a list of all stocks and their special numbers (tokens)
+- `get_valid_expiry_dates()`: Finds out which days you can trade options for a stock
+- `fetch_option_greeks()`: Gets special math numbers that tell us about the option's price
+- `get_data()`: Gives us all the information we collected to show on the screen
+
+## 🏃‍♂️ Background Tasks
+
+The application runs two main things at once:
+1. A web page where you can see everything
+2. A helper that keeps getting new information from the stock market
+
+## 🔍 Error Handling
+
+The app is like a careful parent:
+- Checks if your login information is correct
+- Makes sure the data folders exist
+- Keeps track of any problems in log files
+- Tells you if something goes wrong
+
+## 📈 Usage Tips
+
+1. Start by selecting a stock from the dropdown
+2. Choose an expiry date
+3. Wait for the data to load
+4. Explore the IV analysis
+5. Data updates automatically
+
